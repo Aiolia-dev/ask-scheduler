@@ -217,11 +217,16 @@ function createGanttChart(tasks) {
                 const depTaskEnd = new Date(depTask.endDate);
                 const taskStart = new Date(task.startDate);
                 
-                // Calculate middle point of predecessor task
+                // Calculate middle points
                 const startX = new Date((depTaskStart.getTime() + depTaskEnd.getTime()) / 2);
                 const endX = taskStart;
-                const startY = depTaskIndex + 0.5; // Center of predecessor task
-                const endY = index + 0.5; // Center of dependent task
+                
+                // Calculate vertical positions (middle of the bar height)
+                const barHeight = 0.5; // Height of the task bar in chart units
+                const startY = depTaskIndex; // Top of predecessor task
+                const endY = index; // Top of dependent task
+                const startYMiddle = startY + barHeight / 2; // Middle of predecessor task
+                const endYMiddle = endY + barHeight / 2; // Middle of dependent task
 
                 // Create curved dependency line
                 const curveId = `curve-${task.id}-${depTask.id}`;
@@ -242,8 +247,8 @@ function createGanttChart(tasks) {
                     ...lineProps,
                     xMin: startX,
                     xMax: midX,
-                    yMin: startY,
-                    yMax: startY
+                    yMin: startYMiddle,
+                    yMax: startYMiddle
                 };
 
                 // Second segment - vertical down
@@ -252,8 +257,8 @@ function createGanttChart(tasks) {
                     ...lineProps,
                     xMin: midX,
                     xMax: midX,
-                    yMin: startY,
-                    yMax: endY
+                    yMin: startYMiddle,
+                    yMax: endYMiddle
                 };
 
                 // Third segment - horizontal to end
@@ -262,8 +267,8 @@ function createGanttChart(tasks) {
                     ...lineProps,
                     xMin: midX,
                     xMax: endX,
-                    yMin: endY,
-                    yMax: endY
+                    yMin: endYMiddle,
+                    yMax: endYMiddle
                 };
 
                 // Start circle at the middle of predecessor task
@@ -271,7 +276,7 @@ function createGanttChart(tasks) {
                 annotations[startCircleId] = {
                     type: 'point',
                     xValue: startX,
-                    yValue: startY,
+                    yValue: startYMiddle,
                     backgroundColor: 'white',
                     borderColor: 'rgba(0, 0, 0, 0.5)',
                     borderWidth: 1.5,
@@ -284,7 +289,7 @@ function createGanttChart(tasks) {
                 annotations[endCircleId] = {
                     type: 'point',
                     xValue: endX,
-                    yValue: endY,
+                    yValue: endYMiddle,
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     borderColor: 'rgba(0, 0, 0, 0.5)',
                     radius: 4,
