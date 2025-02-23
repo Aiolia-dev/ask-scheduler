@@ -213,60 +213,51 @@ function createGanttChart(tasks) {
             dependencies.forEach((depTask, depIndex) => {
                 const depTaskIndex = sortedTasks.findIndex(t => t.id === depTask.id);
                 // Calculate positions
-                const startX = new Date(depTask.endDate);
-                const endX = new Date(task.startDate);
+                const depTaskStart = new Date(depTask.startDate);
+                const depTaskEnd = new Date(depTask.endDate);
+                const taskStart = new Date(task.startDate);
+                
+                // Calculate middle point of predecessor task
+                const startX = new Date((depTaskStart.getTime() + depTaskEnd.getTime()) / 2);
+                const endX = taskStart;
                 const startY = depTaskIndex + 0.5; // Center of predecessor task
                 const endY = index + 0.5; // Center of dependent task
 
-                // Main horizontal connector line
-                const hLineId = `h-line-${task.id}-${depTask.id}`;
-                annotations[hLineId] = {
+                // Create curved dependency line
+                const curveId = `curve-${task.id}-${depTask.id}`;
+                annotations[curveId] = {
                     type: 'line',
-                    borderColor: 'rgba(128, 128, 128, 0.5)',
-                    borderWidth: 1,
-                    borderDash: [2, 2],
+                    borderColor: 'rgba(0, 0, 0, 0.3)',
+                    borderWidth: 1.5,
+                    curve: true,
                     xMin: startX,
                     xMax: endX,
                     yMin: startY,
-                    yMax: startY,
+                    yMax: endY,
                     z: 1
                 };
 
-                // Vertical connector line
-                const vLineId = `v-line-${task.id}-${depTask.id}`;
-                annotations[vLineId] = {
-                    type: 'line',
-                    borderColor: 'rgba(128, 128, 128, 0.5)',
-                    borderWidth: 1,
-                    borderDash: [2, 2],
-                    xMin: endX,
-                    xMax: endX,
-                    yMin: Math.min(startY, endY),
-                    yMax: Math.max(startY, endY),
-                    z: 1
-                };
-
-                // Start circle
+                // Start circle at the middle of predecessor task
                 const startCircleId = `start-${task.id}-${depTask.id}`;
                 annotations[startCircleId] = {
                     type: 'point',
                     xValue: startX,
                     yValue: startY,
                     backgroundColor: 'white',
-                    borderColor: 'rgba(128, 128, 128, 0.7)',
-                    borderWidth: 1,
+                    borderColor: 'rgba(0, 0, 0, 0.5)',
+                    borderWidth: 1.5,
                     radius: 3,
                     z: 2
                 };
 
-                // End arrow
+                // End arrow at the start of dependent task
                 const endCircleId = `end-${task.id}-${depTask.id}`;
                 annotations[endCircleId] = {
                     type: 'point',
                     xValue: endX,
                     yValue: endY,
-                    backgroundColor: 'rgba(128, 128, 128, 0.7)',
-                    borderColor: 'rgba(128, 128, 128, 0.7)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    borderColor: 'rgba(0, 0, 0, 0.5)',
                     radius: 4,
                     z: 2
                 };
