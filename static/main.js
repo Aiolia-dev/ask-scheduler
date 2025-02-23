@@ -225,14 +225,43 @@ function createGanttChart(tasks) {
 
                 // Create curved dependency line
                 const curveId = `curve-${task.id}-${depTask.id}`;
-                annotations[curveId] = {
+                const midX = new Date((startX.getTime() + endX.getTime()) / 2);
+                
+                // First segment - horizontal from start
+                const curve1Id = `curve1-${task.id}-${depTask.id}`;
+                annotations[curve1Id] = {
                     type: 'line',
                     borderColor: 'rgba(0, 0, 0, 0.3)',
                     borderWidth: 1.5,
-                    curve: true,
                     xMin: startX,
-                    xMax: endX,
+                    xMax: midX,
                     yMin: startY,
+                    yMax: startY,
+                    z: 1
+                };
+
+                // Second segment - vertical down
+                const curve2Id = `curve2-${task.id}-${depTask.id}`;
+                annotations[curve2Id] = {
+                    type: 'line',
+                    borderColor: 'rgba(0, 0, 0, 0.3)',
+                    borderWidth: 1.5,
+                    xMin: midX,
+                    xMax: midX,
+                    yMin: startY,
+                    yMax: endY,
+                    z: 1
+                };
+
+                // Third segment - horizontal to end
+                const curve3Id = `curve3-${task.id}-${depTask.id}`;
+                annotations[curve3Id] = {
+                    type: 'line',
+                    borderColor: 'rgba(0, 0, 0, 0.3)',
+                    borderWidth: 1.5,
+                    xMin: midX,
+                    xMax: endX,
+                    yMin: endY,
                     yMax: endY,
                     z: 1
                 };
